@@ -3,7 +3,7 @@ FROM java:8
 MAINTAINER Dino.Korah@redmatter.com
 
 ENV TZ="Europe/London" \
-	BAMBOO_VERSION="5.10.0" \
+    BAMBOO_VERSION="5.10.0" \
     BAMBOO_HOME="/var/atlassian/application-data/bamboo" \
     BAMBOO_INSTALL_DIR="/opt/atlassian/bamboo" \
     # unprivileged users used to run the app
@@ -32,8 +32,8 @@ RUN ( \
     mkdir ${BAMBOO_INSTALL_DIR}/lib/native; \
     ln --symbolic "/usr/lib/x86_64-linux-gnu/libtcnative-1.so" "${BAMBOO_INSTALL_DIR}/lib/native/libtcnative-1.so"; \
 
-	wget -qO- https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.38.tar.gz | \
-		tar -xz -O mysql-connector-java-5.1.38/mysql-connector-java-5.1.38-bin.jar >"${BAMBOO_INSTALL_DIR}/lib/mysql-connector-java-5.1.38-bin.jar"; \
+    wget -qO- https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.38.tar.gz | \
+        tar -xz -O mysql-connector-java-5.1.38/mysql-connector-java-5.1.38-bin.jar >"${BAMBOO_INSTALL_DIR}/lib/mysql-connector-java-5.1.38-bin.jar"; \
 
     mkdir -p ${BAMBOO_HOME}; \
 
