@@ -12,7 +12,6 @@ ENV TZ="Europe/London" \
 
 ADD https://www.atlassian.com/software/bamboo/downloads/binary/atlassian-bamboo-${BAMBOO_VERSION}.tar.gz /tmp/files.tar.gz
 #COPY atlassian-bamboo-${BAMBOO_VERSION}.tar.gz /tmp/files.tar.gz
-COPY install.sh /tmp/.
 
 RUN ( \
     export DEBIAN_FRONTEND=noninteractive; \
