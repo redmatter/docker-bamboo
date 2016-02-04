@@ -1,0 +1,30 @@
+bamboo-server:
+    build: server
+    volumes_from:
+        - bamboo-server-data
+    ports:
+        - "8085:8085"
+    links:
+        - mysql
+
+mysql:
+    image: "mysql:5.6"
+    volumes_from:
+        - mysql-data
+    environment:
+        MYSQL_ROOT_PASSWORD: letmein
+        MYSQL_DATABASE: bamboo
+        MYSQL_USER: atlbamboo
+        MYSQL_PASSWORD: letmein
+    ports:
+        - "3306:3306"
+
+bamboo-server-data:
+    build: server-data
+
+mysql-data:
+    image: debian:jessie
+    volumes:
+        - ./mysql/data:/var/lib/mysql
+        - ./mysql/initdb:/docker-entrypoint-initdb.d
+    entrypoint: /bin/bash
