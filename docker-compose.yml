@@ -21,10 +21,11 @@ mysql:
 
 bamboo-server-data:
     build: server-data
+    volumes:
+        - ./data/bamboo:/var/atlassian/application-data/bamboo
 
 mysql-data:
     image: debian:jessie
     volumes:
-        - ./mysql/data:/var/lib/mysql
-        - ./mysql/initdb:/docker-entrypoint-initdb.d
-    entrypoint: /bin/bash
+        - ./data/mysql:/var/lib/mysql
+        - ./mysql-initdb:/docker-entrypoint-initdb.d
