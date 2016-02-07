@@ -1,31 +1,36 @@
-bamboo-server:
-    build: server
-    volumes_from:
-        - bamboo-server-data
-    ports:
-        - "8085:8085"
-    links:
-        - mysql
+version: "2"
+services:
+    bamboo-server:
+        build: server
+        volumes:
+            - bamboo-home:/var/atlassian/application-data/bamboo
+        ports:
+            - "8085:8085"
+        links:
+            - mysql
+            - registry
 
-mysql:
-    image: "mysql:5.6"
-    volumes_from:
-        - mysql-data
-    environment:
-        MYSQL_ROOT_PASSWORD: letmein
-        MYSQL_DATABASE: bamboo
-        MYSQL_USER: atlbamboo
-        MYSQL_PASSWORD: letmein
-    ports:
-        - "3306:3306"
+    mysql:
+        image: "mysql:5.6"
+        volumes:
+            - mysql-data:/var/lib/mysql
+            - ./mysql-initdb:/docker-entrypoint-initdb.d
+        environment:
+            MYSQL_ROOT_PASSWORD: letmein
+            MYSQL_DATABASE: bamboo
+            MYSQL_USER: atlbamboo
+            MYSQL_PASSWORD: letmein
+        ports:
+            - "3306:3306"
 
-bamboo-server-data:
-    build: server-data
-    volumes:
-        - ./data/bamboo:/var/atlassian/application-data/bamboo
+    registry:
+        image: registry:2
+        ports:
+            - "5000:5000"
+        volumes:
+            - registry-data:/var/lib/registry
+volumes:
+    bamboo-home:
+    mysql-data:
+    registry-data:
 
-mysql-data:
-    image: debian:jessie
-    volumes:
-        - ./data/mysql:/var/lib/mysql
-        - ./mysql-initdb:/docker-entrypoint-initdb.d
