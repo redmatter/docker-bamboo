@@ -3,7 +3,7 @@ FROM java:8
 MAINTAINER Dino.Korah@redmatter.com
 
 ENV TZ="Europe/London" \
-    BAMBOO_VERSION="5.10.0" \
+    BAMBOO_VERSION="5.10.1.1" \
     BAMBOO_HOME="/var/atlassian/application-data/bamboo" \
     BAMBOO_INSTALL_DIR="/opt/atlassian/bamboo" \
     # unprivileged users used to run the app
