@@ -1,0 +1,14 @@
+diff -U 3 -dHBr atlassian-bamboo-5.10.1.1/conf/server.xml atlassian-bamboo-5.10.1.1.mod/conf/server.xml
+--- atlassian-bamboo-5.10.1.1/conf/server.xml	2016-02-08 08:57:52.000000000 +0000
++++ atlassian-bamboo-5.10.1.1.mod/conf/server.xml	2016-02-29 14:05:54.394192596 +0000
+@@ -61,6 +61,10 @@
+             URIEncoding="UTF-8"
+ 
+             redirectPort="8443"
++
++            proxyName="bamboo.redmatter.com"
++            proxyPort="443"
++            scheme="https"
+             />
+ 
+         <!--
