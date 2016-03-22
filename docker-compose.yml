@@ -20,8 +20,8 @@ services:
             MYSQL_DATABASE: bamboo
             MYSQL_USER: atlbamboo
             MYSQL_PASSWORD: letmein
-        ports:
-            - "3306:3306"
+        expose:
+            - "3306"
 
     registry:
         image: registry:2
