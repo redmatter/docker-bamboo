@@ -29,8 +29,10 @@ RUN ( \
     tar -C ${BAMBOO_INSTALL_DIR} --strip-components=1 -xzf /tmp/files.tar.gz; \
     echo "bamboo.home=${BAMBOO_HOME}" >> ${BAMBOO_INSTALL_DIR}/atlassian-bamboo/WEB-INF/classes/bamboo-init.properties; \
 
-	patch -p1 -d ${BAMBOO_INSTALL_DIR} < /tmp/https_proxy_server_xml.patch; \
-	rm /tmp/https_proxy_server_xml.patch; \
+    # setup reverse proxy settings
+    # More details here https://confluence.atlassian.com/bamboo/integrating-bamboo-with-apache-http-server-391087370.html
+    patch -p1 -d ${BAMBOO_INSTALL_DIR} < /tmp/https_proxy_server_xml.patch; \
+    rm /tmp/https_proxy_server_xml.patch; \
 
     mkdir ${BAMBOO_INSTALL_DIR}/lib/native; \
     ln --symbolic "/usr/lib/x86_64-linux-gnu/libtcnative-1.so" "${BAMBOO_INSTALL_DIR}/lib/native/libtcnative-1.so"; \
