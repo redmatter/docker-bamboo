@@ -10,4 +10,4 @@ CATALINA_OPTS="${CATALINA_OPTS} -DcatalinaConnectorProxyPort=${CATALINA_CONNECTO
 CATALINA_OPTS="${CATALINA_OPTS} -DcatalinaConnectorScheme=${CATALINA_CONNECTOR_SCHEME}"
 
 export CATALINA_OPTS
-exec bin/start-bamboo.sh -fg
+exec bin/start-bamboo.sh "$@"
