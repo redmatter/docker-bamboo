@@ -13,6 +13,7 @@ ENV TZ="Europe/London" \
 ADD https://www.atlassian.com/software/bamboo/downloads/binary/atlassian-bamboo-${BAMBOO_VERSION}.tar.gz /tmp/files.tar.gz
 #COPY atlassian-bamboo-${BAMBOO_VERSION}.tar.gz /tmp/files.tar.gz
 COPY https_proxy_server_xml.patch /tmp/
+COPY entrypoint.sh /entrypoint.sh
 
 RUN ( \
     export DEBIAN_FRONTEND=noninteractive; \
@@ -62,4 +63,4 @@ EXPOSE 54663
 
 WORKDIR ${BAMBOO_INSTALL_DIR}
 
-CMD ["bin/start-bamboo.sh", "-fg"]
+CMD ["/entrypoint.sh", "-fg"]

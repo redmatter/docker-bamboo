@@ -6,9 +6,9 @@ diff -U 3 -dHBr atlassian-bamboo-5.10.1.1/conf/server.xml atlassian-bamboo-5.10.
  
              redirectPort="8443"
 +
-+            proxyName="bamboo.redmatter.com"
-+            proxyPort="443"
-+            scheme="https"
++            proxyName="${catalinaConnectorProxyName}"
++            proxyPort="${catalinaConnectorProxyPort}"
++            scheme="${catalinaConnectorScheme}"
              />
  
          <!--
