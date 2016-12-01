@@ -2,13 +2,18 @@ FROM java:8
 
 MAINTAINER Dino.Korah@redmatter.com
 
+ARG RUN_USER=daemon
+ARG RUN_GROUP=daemon
+ARG RUN_USER_HOME_DIR=
+
 ENV TZ="Europe/London" \
+    # unprivileged users used to run the app
+    RUN_USER=${RUN_USER} \
+    RUN_GROUP=${RUN_GROUP} \
+    # bamboo variables
     BAMBOO_VERSION="5.10.1.1" \
     BAMBOO_HOME="/var/atlassian/application-data/bamboo" \
-    BAMBOO_INSTALL_DIR="/opt/atlassian/bamboo" \
-    # unprivileged users used to run the app
-    RUN_USER=daemon \
-    RUN_GROUP=daemon
+    BAMBOO_INSTALL_DIR="/opt/atlassian/bamboo"
 
 ADD https://www.atlassian.com/software/bamboo/downloads/binary/atlassian-bamboo-${BAMBOO_VERSION}.tar.gz /tmp/files.tar.gz
 #COPY atlassian-bamboo-${BAMBOO_VERSION}.tar.gz /tmp/files.tar.gz
@@ -19,6 +24,9 @@ RUN ( \
     export DEBIAN_FRONTEND=noninteractive; \
     export BUILD_DEPS="patch"; \
     export APP_DEPS="libtcnative-1"; \
+
+    MYSQL_CONNECTOR_VERSION=5.1.40; \
+    MYSQL_CONNECTOR_URL="https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-${MYSQL_CONNECTOR_VERSION}.tar.gz"; \
 
     set -e -u -x; \
 
@@ -38,13 +46,40 @@ RUN ( \
     mkdir ${BAMBOO_INSTALL_DIR}/lib/native; \
     ln --symbolic "/usr/lib/x86_64-linux-gnu/libtcnative-1.so" "${BAMBOO_INSTALL_DIR}/lib/native/libtcnative-1.so"; \
 
-    wget -qO- https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.38.tar.gz | \
-        tar -xz -O mysql-connector-java-5.1.38/mysql-connector-java-5.1.38-bin.jar >"${BAMBOO_INSTALL_DIR}/lib/mysql-connector-java-5.1.38-bin.jar"; \
+    wget -qO- "${MYSQL_CONNECTOR_URL}" | \
+        tar -xz -O mysql-connector-java-${MYSQL_CONNECTOR_VERSION}/mysql-connector-java-${MYSQL_CONNECTOR_VERSION}-bin.jar \
+        >"${BAMBOO_INSTALL_DIR}/lib/mysql-connector-java-${MYSQL_CONNECTOR_VERSION}-bin.jar"; \
 
-    mkdir -p ${BAMBOO_HOME}; \
+    mkdir -p "${BAMBOO_HOME}"; \
 
-    chown -R ${RUN_USER}:${RUN_GROUP} ${BAMBOO_INSTALL_DIR} ${BAMBOO_HOME}; \
-    chmod -R go-rwx ${BAMBOO_INSTALL_DIR}/logs ${BAMBOO_INSTALL_DIR}/temp ${BAMBOO_INSTALL_DIR}/work; \
+    # If RUN_USER's home directory is not specified as a build parameter, fall back to BAMBOO_HOME
+    [ -n "${RUN_USER_HOME_DIR}" ] || RUN_USER_HOME_DIR="$BAMBOO_HOME"; \
+
+    # if the specified RUN_GROUP is not present add it
+    getent group "${RUN_GROUP}" >/dev/null 2>&1 || groupadd "${RUN_GROUP}"; \
+
+    # check if the specified RUN_USER is present
+    if getent passwd "${RUN_USER}" >/dev/null 2>&1 ; then \
+        # if present, check if RUN_USER's home directory is not writable
+        current_home="$( getent passwd "${RUN_USER}" | cut -d: -f 6 )"; \
+        su -c "[ -w \"$current_home\" ]" -s /bin/bash "${RUN_USER}" || \
+            # if so, modify the user to set home directory to RUN_USER_HOME_DIR
+            usermod -d "${RUN_USER_HOME_DIR}" "${RUN_USER}"; \
+    else \
+        useradd "${RUN_USER}" -g "${RUN_GROUP}" -d "${RUN_USER_HOME_DIR}"; \
+    fi; \
+
+    if [ ! -d "${RUN_USER_HOME_DIR}" ]; then \
+        mkdir -p "${RUN_USER_HOME_DIR}"; \
+        chown "${RUN_USER}:${RUN_GROUP}" "${RUN_USER_HOME_DIR}"; \
+        chmod go-rwx "${RUN_USER_HOME_DIR}"; \
+    fi; \
+
+    mkdir -p "${RUN_USER_HOME_DIR}/.ssh"; \
+
+    chown -R "${RUN_USER}:${RUN_GROUP}" "${BAMBOO_INSTALL_DIR}" "${BAMBOO_HOME}" "${RUN_USER_HOME_DIR}/.ssh"; \
+    chmod -R go-rwx "${BAMBOO_INSTALL_DIR}/logs" "${BAMBOO_INSTALL_DIR}/temp" \
+        "${BAMBOO_INSTALL_DIR}/work" "${RUN_USER_HOME_DIR}/.ssh"; \
 
     apt-get remove -y $BUILD_DEPS; \
     apt-get clean autoclean; \
@@ -52,7 +87,7 @@ RUN ( \
     rm -rf /var/lib/{apt,dpkg,cache,log}/; \
     
     # fix issue #2 - replace dash with bash
-    ln -sf bash /bin/sh
+    ln -sf bash /bin/sh; \
 )
 
 USER ${RUN_USER}:${RUN_GROUP}
