@@ -15,8 +15,8 @@ ENV TZ="Europe/London" \
     BAMBOO_HOME="/var/atlassian/application-data/bamboo" \
     BAMBOO_INSTALL_DIR="/opt/atlassian/bamboo"
 
-# ADD https://www.atlassian.com/software/bamboo/downloads/binary/atlassian-bamboo-${BAMBOO_VERSION}.tar.gz /tmp/files.tar.gz
-COPY atlassian-bamboo-${BAMBOO_VERSION}.tar.gz /tmp/files.tar.gz
+ADD https://www.atlassian.com/software/bamboo/downloads/binary/atlassian-bamboo-${BAMBOO_VERSION}.tar.gz /tmp/files.tar.gz
+#COPY atlassian-bamboo-${BAMBOO_VERSION}.tar.gz /tmp/files.tar.gz
 COPY https_proxy_server_xml.patch /tmp/
 COPY entrypoint.sh /entrypoint.sh
 
