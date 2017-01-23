@@ -84,7 +84,6 @@ RUN ( \
     apt-get remove -y $BUILD_DEPS; \
     apt-get clean autoclean; \
     apt-get autoremove --yes; \
-    rm -rf /var/lib/{apt,dpkg,cache,log}/; \
     
     # fix issue #2 - replace dash with bash
     ln -sf bash /bin/sh; \
