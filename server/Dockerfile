@@ -11,12 +11,11 @@ ENV TZ="Europe/London" \
     RUN_USER=${RUN_USER} \
     RUN_GROUP=${RUN_GROUP} \
     # bamboo variables
-    BAMBOO_VERSION="5.10.1.1" \
+    BAMBOO_VERSION="5.15.3" \
     BAMBOO_HOME="/var/atlassian/application-data/bamboo" \
     BAMBOO_INSTALL_DIR="/opt/atlassian/bamboo"
 
 ADD https://www.atlassian.com/software/bamboo/downloads/binary/atlassian-bamboo-${BAMBOO_VERSION}.tar.gz /tmp/files.tar.gz
-#COPY atlassian-bamboo-${BAMBOO_VERSION}.tar.gz /tmp/files.tar.gz
 COPY https_proxy_server_xml.patch /tmp/
 COPY entrypoint.sh /entrypoint.sh
 
@@ -25,7 +24,7 @@ RUN ( \
     export BUILD_DEPS="patch"; \
     export APP_DEPS="libtcnative-1"; \
 
-    MYSQL_CONNECTOR_VERSION=5.1.40; \
+    MYSQL_CONNECTOR_VERSION=5.1.41; \
     MYSQL_CONNECTOR_URL="https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-${MYSQL_CONNECTOR_VERSION}.tar.gz"; \
 
     set -e -u -x; \
